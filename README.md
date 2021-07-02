@@ -4,7 +4,7 @@ This project applies the DBScan clustering technique to identify graph values fr
 
 The user must find the best parameters eps and min_samples for the clusterization to identify each series independently from the axis lines. 
 With that, the user will see the clusters formed in an image on screen. Then, the user must inform which cluster numbers represent the axis and 
-which ones represent desired serires. The user must also inform the maximum values of the axis x and y. 
+which ones represent desired series. The user must also inform the maximum values of the axis x and y. 
 Considering that information, the script will write a txt file (graph.txt) containing x and y values of each one of the series assessed as desired by the user.
 
 Limitations (future improvements): 
