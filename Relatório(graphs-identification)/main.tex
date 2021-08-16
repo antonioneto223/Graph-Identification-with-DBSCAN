@@ -23,33 +23,15 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
+    backgroundcolor=\color{backcolour},commentstyle=\color{codegreen},keywordstyle=\color{magenta},numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},basicstyle=\ttfamily\footnotesize,breakatwhitespace=false,breaklines=true,                 
+    captionpos=b,keepspaces=true,numbers=left,numbersep=5pt,showspaces=false,showstringspaces=false,
+    showtabs=false,tabsize=2
 }
-
 \lstset{style=mystyle}
 
-
 \begin{document}
-
     \maketitle
-    
-    % \section{Introduction}
-    
     Este projeto visa construir um algoritmo na linguagem python para identificar automaticamente os dados plotados como linha em gráficos obtidos de imagens no formato PNG. Para isso, é utilizada a técnica não supervisionada de Machine Lenarning denomiada DBSCAN. Esta técnica tem como objetivo o agrupamento de observações da amostra de treino com base em densidade. Assim, objetiva-se que cada série do gráfico contido na imagem seja obtida como um grupo do DBSCAN.
     
     \section{Input data}
@@ -58,54 +40,38 @@
     
     \begin{itemize}
         \item Importar a imagem do gráfico em PNG. Para isso, é utilizada função \textit{mpimg} da biblioteca \textit{matplotlib}, a qual vai obter em formato numérico os dados de cores de cada pixel da imagem PNG.
-        
         \item Extrair as informações da imagem e agrupá-las em um dataset. A extração das informações requer o entedimento do posicionamento dos dados de cada pixel (guardando posição cartesiana \textit{xy} de cada um) dentro do objeto \textit{img}. Além disso, é necessário inverter os dados das posições \textit{y}, visto que a leitura da imagem se dá de cima para baixo;
-        
         \item Setar os parâmetros do DBSCAN. Ambos os parametros \textit{eps} (raio) e \textit{p-min} (número mínimo de pontos de um cluster) são setados após avaliações de tentativa e erro.
     \end{itemize}
     
     Segue abaixo o código que realiza as tarefas do Input data, bem como a importação das bibliotecas e funções necessárias:
-    
     \lstinputlisting[language=Octave]{input_data.py}
-    
     
     \section{Processamento do DBSCAN}
     
     O processamento do algoritmo DBSCAN é realizado com base em seis variáveis: componente R da cor, componente G da cor, componente B da cor, parâmetro $\alpha$ da cor, posição \textit{x} e posição \textit{y}. Todas já estão presentes no dataset \textit{df} do \textit{pandas}. Lembrando que é necessário realizar padronização com a função \textit{scale}, visto que os limites das variáveis são diferentes, o que prejudica nos cálculos de distância e densidade.
-    
     Assim, pode-se aplicar a função \textit{DBSCAN} da biblioteca \textit{sklearn.cluster}. Os cluster obtidos são então plotados na tela, para que o usuário avalie visualmente os resultados obtidos.
-    
     Neste momento, a correta avaliação das séries requer a entrada manual de algumas informações pelo usuário, estão são:
     
     \begin{itemize}
-        \item Identificação de quais clusters são as séries desejadas, pois os eixos $x$ e $y$ também são clusterizados e estes devem ser identificados pelo usuário no plot dos clusters.
-        
+        \item Identificação de quais clusters são as séries desejadas, pois os eixos $x$ e $y$ também são clusterizados e estes devem ser identificados pelo usuário no plot dos clusters;
         \item Os valores limite dos eixos $x$ e $y$ para que a transformação do espaço de pixels para o espaço real seja feita corretamente. Vale mencionar aqui que, por hipótese, o código assume que ambos os eixos iniciam no valor $0$.
     \end{itemize}
     
     Com estas informações, o código deve obter quais pixels pertencem à cada uma da séries desejadas, bem como suas posições cartesianas. As posições devem ser transformadas para valores $xy$ reais com base nos valores limites dos eixos informados pelo o usuário. Para isso, basta aplicar uma simples transformação linear de coordenadas.
-    
     Segue abaixo o código que realiza as tarefas de etapa de processamento:
-    
     \lstinputlisting[language=Octave]{processing.py}
-    
     
     \section{Pós-Processamento / Saída de dados}
     
     Assim, o código já tem todas as informações necessárias para realizar o pós-processamento dos dados e posterior Output data. 
-    
     Nessa etapa, é setado o número de pontos (\textit{n\_points}) que será avaliado em cada uma das séries identificadas pelo usuário na etapa anterior. O intervalo em \textit{x} de cada série é então dividido em um número determinado de intervalos $\Delta \bar{x}$ correspondente à \textit{n\_points}. Cada ponto $\bar{x}$ avaliado é setado como o valor central de cada intervalo $\Delta \bar{x}$. O valor $\bar{y}_i$ de cada ponto para cada série $i$ é determinado pela média de todos os pontos da série que correspondam à $\bar{x}$. 
-    
     Com estas informações, é construída uma string \textit{output} que vai receber todas informações à serem escritas no arquivo TXT de saída de dados. A saida de dados consiste de uma matriz contendo os valores $\bar{x}$ e os valores $\bar{y}_i$ obtidos para cada um das séries $i$.
-    
     Segue abaixo o código que realiza as tarefas desta etapa:
-     
     \lstinputlisting[language=Octave]{pos.py}  
 
     \section{Exemplos de aplicação}    
-    % **************************************************************************
     \subsection{Exemplo 1: Gráfico com série única}    
-    % **************************************************************************
     
     No primeiro exemplo é gerado um gráfico no Excel com uma série única que representa a função $f(x)=x^2+5$. A imagem importada pelo código é ilustrada na Fig. \ref{fig:ex1_1}. 
     
@@ -136,9 +102,7 @@
         \label{fig:ex1_3}
     \end{figure}
     
-    % **************************************************************************
     \subsection{Exemplo 2: Gráfico com múltiplas séries}    
-    % **************************************************************************
     
     No segundo exemplo é gerado um gráfico no Excel com três diferentes séries que representam as seguintes funções:
     
@@ -177,27 +141,16 @@
         \label{fig:ex2_3}
     \end{figure}
     
-    % **************************************************************************
     \section{Conclusão}
-    % **************************************************************************
     
     Os resultados apresentados concluem que o algoritmo desenvolvido nesse projeto cumpriu satisfatoriamente seu objetivo de obter automaticamente os pontos de séries de um gráfico a partir da imagem em PNG. Ambos os exemplos encontraram convergência facilmente do DBSCAN utilizando os mesmos parâmetros. O algoritmo se mostrou ainda robusto ao conseguir trabalhar com diversas séries no mesmo gráfico e que contem cruzamentos entre diferentes linhas. 
-    
     Obviamente o algoritmo desenvolvido possui uma série de limitações que poderiam ser atacadas em oportunidades futuras. Como limitações e hipóteses simplificadoras assumidas, destacam-se:
     
     \begin{itemize}
         \item A necessidade do usuário informar quais os clusters se referem aos eixos $xy$ do gráfico para que estes sejam excluídos da resposta final. Esta tarefa poderia ser realizada automaticamente pelo código ao buscar por relações matemáticas entre os valores $\bar{y}_i$ obtidos pelos clusters que indicassem qual deles se refere aos eixos;
-        
         \item A necessidade do usuário informar os valores máximos dos eixos, considerando que ambos iniciam no zero. Um algoritmo de identificação de números na imagem poderia ser aplicado para identificar esses valores, permitindo que o PNG inicial contivesse os labels dos eixos;
-        
         \item A dificuldade em lidar com gráficos que possuam legenda dentro da área de plotagem. Essa limitação poderia ser contornada ao programar funções que permitissem identificar no PNG a área da legenda e retirar os pixels referentes à ela da clusterização.
-        
     \end{itemize}
     
     Assim, conclui-se que este trabalho aplica com sucesso uma técnica não supervisionada de Machine learning em uma aplicação gráfica. O projeto final encontra-se com algumas limitações e hipóteses simplificadoras, porém este se mostra robusto e com bastante potencial. Tais limitações poderiam ser vencidas futuramente, caso haja interesse no desenvolvimento mais profundo deste projeto.
-    
-    % ``I always thought something was fundamentally wrong with the universe'' \citep{adams1995hitchhiker}
-    
-    % \bibliographystyle{plain}
-    % \bibliography{references}
 \end{document}
